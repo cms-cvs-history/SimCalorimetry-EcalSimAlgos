@@ -7,7 +7,8 @@
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloTDigitizer.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalSimParameterMap.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalShape.h"
-#include "SimCalorimetry/EcalSimAlgos/interface/EBSimShape.h"
+#include "SimCalorimetry/EcalSimAlgos/interface/EcalDigitizerTraits.h"
+//#include "SimCalorimetry/EcalSimAlgos/interface/EBSimShape.h"
 #include "CalibFormats/EcalObjects/interface/EcalCoder.h"
 #include "CalibCalorimetry/EcalAlgos/interface/EcalDbServiceHardcode.h"
 #include <vector>
@@ -34,7 +35,7 @@ int main() {
   endcapHits.push_back(endcapHit);
 
   EcalSimParameterMap parameterMap;
-  EBSimShape ecalShape(1.9181,4.52546,1.92921);
+  //EBSimShape ecalShape(1.9181,4.52546,1.92921);
   EcalShape shape2;
 
 //  for(int i = 0; i < 100; ++i) {
@@ -47,14 +48,16 @@ int main() {
   EcalDbServiceHardcode calibrator;
   EcalCoder coder(&calibrator);
 
-  CaloTDigitizer<EBDataFrame, EcalCoder> barrelDigitizer(&ecalResponse, &coder, barrelDetIds);
-  CaloTDigitizer<EEDataFrame, EcalCoder> endcapDigitizer(&ecalResponse, &coder, endcapDetIds);
+  CaloTDigitizer<EBDigitizerTraits> barrelDigitizer(&ecalResponse, &coder);
+  CaloTDigitizer<EEDigitizerTraits> endcapDigitizer(&ecalResponse, &coder);
+  barrelDigitizer.setDetIds(barrelDetIds);
+  endcapDigitizer.setDetIds(endcapDetIds);
 
-  auto_ptr<vector<EBDataFrame> > barrelResult(new vector<EBDataFrame>);
-  auto_ptr<vector<EEDataFrame> > endcapResult(new vector<EEDataFrame>);
+  auto_ptr<EBDigiCollection> barrelResult(new EBDigiCollection);
+  auto_ptr<EEDigiCollection> endcapResult(new EEDigiCollection);
 
-  barrelDigitizer.run(barrelHits, barrelResult);
-  endcapDigitizer.run(endcapHits, endcapResult);
+  barrelDigitizer.run(barrelHits, *barrelResult);
+  endcapDigitizer.run(endcapHits, *endcapResult);
 
   // print out all the digis
   cout << "EB Frames" << endl;
