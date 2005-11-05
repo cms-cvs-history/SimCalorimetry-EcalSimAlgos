@@ -2,15 +2,14 @@
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalDigi/interface/EBDataFrame.h"
 #include "DataFormats/EcalDigi/interface/EEDataFrame.h"
-#include "SimCalorimetry/CaloSimAlgos/interface/CaloHit.h"
+#include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloHitResponse.h"
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloTDigitizer.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalSimParameterMap.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalShape.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalDigitizerTraits.h"
-//#include "SimCalorimetry/EcalSimAlgos/interface/EBSimShape.h"
-#include "CalibFormats/EcalObjects/interface/EcalCoder.h"
-#include "CalibCalorimetry/EcalAlgos/interface/EcalDbServiceHardcode.h"
+#include "SimCalorimetry/EcalSimAlgos/interface/EcalCoder.h"
+#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include <vector>
 #include<iostream>
 #include<iterator>
@@ -21,16 +20,16 @@ int main() {
   // make a silly little hit in each subdetector, which should
   // correspond to a 100 GeV particle
   EBDetId barrelDetId(1, 1);
-  CaloHit barrelHit(barrelDetId, 100., 0., 0);
+  PCaloHit barrelHit(barrelDetId.rawId(), 100., 0.);
 
   EEDetId endcapDetId(1, 1, 1);
-  CaloHit endcapHit(endcapDetId, 1000., 0., 0);
+  PCaloHit endcapHit(endcapDetId.rawId(), 1000., 0.);
 
   vector<DetId> barrelDetIds, endcapDetIds;
   barrelDetIds.push_back(barrelDetId);
   endcapDetIds.push_back(endcapDetId);
 
-  vector<CaloHit> barrelHits, endcapHits;
+  vector<PCaloHit> barrelHits, endcapHits;
   barrelHits.push_back(barrelHit);
   endcapHits.push_back(endcapHit);
 
@@ -45,8 +44,19 @@ int main() {
 
   CaloHitResponse ecalResponse(&parameterMap, &shape2);
 
-  EcalDbServiceHardcode calibrator;
-  EcalCoder coder(&calibrator);
+  EcalCoder coder;
+  // make pedestals for each of these
+  EcalPedestals::Item item;
+  item.mean_x1 = 2.;
+  item.rms_x1 = 0.;
+  item.mean_x6 = 5.;
+  item.rms_x6 = 0.;
+  item.mean_x12 = 10.;
+  item.rms_x12 = 0.;
+  EcalPedestals thePedestals;
+  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(barrelDetId.rawId(), item));
+  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(endcapDetId.rawId(), item));
+  coder.setPedestals(&thePedestals);
 
   CaloTDigitizer<EBDigitizerTraits> barrelDigitizer(&ecalResponse, &coder);
   CaloTDigitizer<EEDigitizerTraits> endcapDigitizer(&ecalResponse, &coder);
