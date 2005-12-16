@@ -1,6 +1,5 @@
 <environment>
   <use name=SimCalorimetry/EcalSimAlgos>
-  <use name=CalibCalorimetry/EcalAlgos>
   <use name=SimCalorimetry/CaloSimAlgos>
 
   <bin file=EcalDigitizerTest.cpp></bin>
