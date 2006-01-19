@@ -10,6 +10,7 @@
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalDigitizerTraits.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalCoder.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+#include "SimDataFormats/CrossingFrame/interface/CrossingFrame.h"
 #include <vector>
 #include<iostream>
 #include<iterator>
@@ -29,9 +30,19 @@ int main() {
   barrelDetIds.push_back(barrelDetId);
   endcapDetIds.push_back(endcapDetId);
 
-  vector<PCaloHit> barrelHits, endcapHits;
+  edm::PCaloHitContainer barrelHits, endcapHits;
   barrelHits.push_back(barrelHit);
   endcapHits.push_back(endcapHit);
+
+  string barrelName = "EcalHitsEB";
+  string endcapName = "EcalHitsEE";
+  vector<string> caloDets, trackingDets;
+  caloDets.push_back(barrelName);
+  caloDets.push_back(endcapName);
+
+  CrossingFrame crossingFrame(-5, 5, 25, trackingDets, caloDets);
+  crossingFrame.addSignalCaloHits(barrelName, &barrelHits);
+  crossingFrame.addSignalCaloHits(endcapName, &endcapHits);
 
   EcalSimParameterMap parameterMap;
   //EBSimShape ecalShape(1.9181,4.52546,1.92921);
@@ -66,8 +77,11 @@ int main() {
   auto_ptr<EBDigiCollection> barrelResult(new EBDigiCollection);
   auto_ptr<EEDigiCollection> endcapResult(new EEDigiCollection);
 
-  barrelDigitizer.run(barrelHits, *barrelResult);
-  endcapDigitizer.run(endcapHits, *endcapResult);
+  MixCollection<PCaloHit> barrelHitCollection(&crossingFrame, barrelName);
+  MixCollection<PCaloHit> endcapHitCollection(&crossingFrame, endcapName);
+
+  barrelDigitizer.run(barrelHitCollection, *barrelResult);
+  endcapDigitizer.run(endcapHitCollection, *endcapResult);
 
   // print out all the digis
   cout << "EB Frames" << endl;
@@ -76,7 +90,7 @@ int main() {
   cout << "EE Frames" << endl;
   copy(endcapResult->begin(), endcapResult->end(), std::ostream_iterator<EEDataFrame>(std::cout, "\n"));
 
-return 0;
+  return 0;
 }
 
 
