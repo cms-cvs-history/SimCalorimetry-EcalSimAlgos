@@ -9,6 +9,7 @@
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalShape.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalDigitizerTraits.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalCoder.h"
+#include "SimCalorimetry/EcalSimAlgos/interface/EcalElectronicsSim.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "SimDataFormats/CrossingFrame/interface/CrossingFrame.h"
 #include <vector>
@@ -55,7 +56,7 @@ int main() {
 
   CaloHitResponse ecalResponse(&parameterMap, &shape2);
 
-  EcalCoder coder;
+
   // make pedestals for each of these
   EcalPedestals::Item item;
   item.mean_x1 = 2.;
@@ -67,10 +68,14 @@ int main() {
   EcalPedestals thePedestals;
   thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(barrelDetId.rawId(), item));
   thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(endcapDetId.rawId(), item));
+
+  bool addNoise = false;
+  EcalCoder coder(addNoise);
+  EcalElectronicsSim electronicsSim(&parameterMap, &coder);
   coder.setPedestals(&thePedestals);
 
-  CaloTDigitizer<EBDigitizerTraits> barrelDigitizer(&ecalResponse, &coder);
-  CaloTDigitizer<EEDigitizerTraits> endcapDigitizer(&ecalResponse, &coder);
+  CaloTDigitizer<EBDigitizerTraits> barrelDigitizer(&ecalResponse, &electronicsSim, addNoise);
+  CaloTDigitizer<EEDigitizerTraits> endcapDigitizer(&ecalResponse, &electronicsSim, addNoise);
   barrelDigitizer.setDetIds(barrelDetIds);
   endcapDigitizer.setDetIds(endcapDetIds);
 
