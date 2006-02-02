@@ -58,18 +58,30 @@ int main() {
 
 
   // make pedestals for each of these
-  EcalPedestals::Item item;
-  item.mean_x1 = 2.;
-  item.rms_x1 = 0.;
-  item.mean_x6 = 5.;
-  item.rms_x6 = 0.;
-  item.mean_x12 = 10.;
-  item.rms_x12 = 0.;
-  EcalPedestals thePedestals;
-  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(barrelDetId.rawId(), item));
-  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(endcapDetId.rawId(), item));
+  EcalPedestals::Item barrelItem;
+  // pedestals = 220 counts * 32 MeV/ADC = 7 GeV
+  // noise = 40 MeV in barrel
+  barrelItem.mean_x1 = 7.05;
+  barrelItem.rms_x1 = 0.003;
+  barrelItem.mean_x6 = 7.05;
+  barrelItem.rms_x6 = 0.020;
+  barrelItem.mean_x12 = 7.05;
+  barrelItem.rms_x12 = 0.040;
 
-  bool addNoise = false;
+  // noise is 150 MeV in endcaps
+  EcalPedestals::Item endcapItem;
+  endcapItem.mean_x1 = 7.05;
+  endcapItem.rms_x1 = 0.038;
+  endcapItem.mean_x6 = 7.05;
+  endcapItem.rms_x6 = 0.075;
+  endcapItem.mean_x12 = 7.05;
+  endcapItem.rms_x12 = 0.150;
+
+  EcalPedestals thePedestals;
+  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(barrelDetId.rawId(), barrelItem));
+  thePedestals.m_pedestals.insert(pair<int, EcalPedestals::Item>(endcapDetId.rawId(), endcapItem));
+
+  bool addNoise = true;
   EcalCoder coder(addNoise);
   EcalElectronicsSim electronicsSim(&parameterMap, &coder);
   coder.setPedestals(&thePedestals);
