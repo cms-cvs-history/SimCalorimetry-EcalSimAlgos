@@ -3,5 +3,6 @@
   <use name=SimCalorimetry/CaloSimAlgos>
 
   <bin file=EcalDigitizerTest.cpp></bin>
+  <bin file=ESDigitizerTest.cpp></bin>
 </environment>
 
