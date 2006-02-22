@@ -37,11 +37,11 @@ int main() {
 
   string barrelName = "EcalHitsEB";
   string endcapName = "EcalHitsEE";
-  vector<string> caloDets, trackingDets;
+  vector<string> caloDets, muonDets, trackingDets;
   caloDets.push_back(barrelName);
   caloDets.push_back(endcapName);
 
-  CrossingFrame crossingFrame(-5, 5, 25, trackingDets, caloDets);
+  CrossingFrame crossingFrame(-5, 5, 25, muonDets, trackingDets, caloDets);
   crossingFrame.addSignalCaloHits(barrelName, &barrelHits);
   crossingFrame.addSignalCaloHits(endcapName, &endcapHits);
 
