@@ -47,7 +47,7 @@ int main() {
 
   EcalSimParameterMap parameterMap;
   //EBSimShape ecalShape(1.9181,4.52546,1.92921);
-  EcalShape shape2;
+  EcalShape shape2(47.6683);
 
 //  for(int i = 0; i < 100; ++i) {
 //    std::cout << i << " " << ecalShape(i) << "  " << shape2(i) << std::endl;
