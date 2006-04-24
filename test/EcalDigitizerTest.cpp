@@ -83,7 +83,9 @@ int main() {
 
   bool addNoise = true;
   EcalCoder coder(addNoise);
-  EcalElectronicsSim electronicsSim(&parameterMap, &coder);
+  bool applyConstantTerm = true;
+  double rmsConstantTerm = 0.003;
+  EcalElectronicsSim electronicsSim(&parameterMap, &coder, applyConstantTerm, rmsConstantTerm);
   coder.setPedestals(&thePedestals);
 
   CaloTDigitizer<EBDigitizerTraits> barrelDigitizer(&ecalResponse, &electronicsSim, addNoise);
