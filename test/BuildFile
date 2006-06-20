@@ -2,7 +2,7 @@
   <use name=SimCalorimetry/EcalSimAlgos>
   <use name=SimCalorimetry/CaloSimAlgos>
 
-  <bin file=EcalDigitizerTest.cpp></bin>
   <bin file=ESDigitizerTest.cpp></bin>
+  <bin file=testEcalShape.cpp></bin>
 </environment>
 
