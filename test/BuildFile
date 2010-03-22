@@ -3,7 +3,6 @@
   <use name=SimCalorimetry/CaloSimAlgos>
   <use name=rootgraphics>
 
-  <bin file=ESDigitizerTest.cpp></bin>
   <bin file=testEcalShape.cpp></bin>
   <bin file=testCorrNoise.cpp></bin>
 </environment>
